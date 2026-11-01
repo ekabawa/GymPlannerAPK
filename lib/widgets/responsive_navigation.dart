@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import '../screens/home_screen.dart';
@@ -18,14 +19,6 @@ class _ResponsiveNavigationState extends State<ResponsiveNavigation> {
   int _selectedIndex = 0;
 
   static const double expandedBreakpoint = 840;
-
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ScheduleScreen(),
-    ExerciseScreen(),
-    HistoryScreen(),
-    ProfileScreen(),
-  ];
 
   final List<NavigationDestination> _destinations = const [
     NavigationDestination(
@@ -66,9 +59,15 @@ class _ResponsiveNavigationState extends State<ResponsiveNavigation> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
+        final isExpanded = screenWidth >= expandedBreakpoint;
 
-        final isExpanded =
-            screenWidth >= expandedBreakpoint;
+        final screens = [
+          HomeScreen(onNavigate: _onDestinationSelected),
+          const ScheduleScreen(),
+          const ExerciseScreen(),
+          const HistoryScreen(),
+          const ProfileScreen(),
+        ];
 
         return Scaffold(
           body: Row(
@@ -97,16 +96,14 @@ class _ResponsiveNavigationState extends State<ResponsiveNavigation> {
                     ),
                   ],
                 ),
-
               Expanded(
                 child: IndexedStack(
                   index: _selectedIndex,
-                  children: _screens,
+                  children: screens,
                 ),
               ),
             ],
           ),
-
           bottomNavigationBar: isExpanded
               ? null
               : NavigationBar(
