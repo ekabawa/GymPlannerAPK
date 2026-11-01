@@ -1,5 +1,6 @@
 class WorkoutModel {
   final String id;
+  final String userId;
   final String exerciseId;
   final String exerciseName;
   final DateTime workoutDate;
@@ -11,6 +12,7 @@ class WorkoutModel {
 
   const WorkoutModel({
     required this.id,
+    required this.userId,
     required this.exerciseId,
     required this.exerciseName,
     required this.workoutDate,
@@ -24,6 +26,7 @@ class WorkoutModel {
   factory WorkoutModel.fromJson(Map<String, dynamic> json) {
     return WorkoutModel(
       id: json['id']?.toString() ?? '',
+      userId: json['user_id'] ?? '',
       exerciseId: json['exercise_id'] ?? '',
       exerciseName: json['exercise_name'] ?? '',
       workoutDate: DateTime.parse(json['workout_date']),
@@ -40,6 +43,7 @@ class WorkoutModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'user_id': userId,
       'exercise_id': exerciseId,
       'exercise_name': exerciseName,
       'workout_date': workoutDate.toIso8601String().split('T').first,
