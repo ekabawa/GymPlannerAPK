@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
+import 'widgets/responsive_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'GYMPLANNER',
       theme: AppTheme.darkTheme,
-      home: const HomePage(),
+      home: const ResponsiveNavigation(),
     );
   }
 }
