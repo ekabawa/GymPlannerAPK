@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.5.6
   uuid: ^4.6.0
   supabase_flutter: ^2.18.3
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
