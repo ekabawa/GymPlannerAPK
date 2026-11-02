@@ -1,22 +1,47 @@
-
 import 'package:flutter/material.dart';
 
+import '../models/exercise_model.dart';
+
 class ExerciseDetailScreen extends StatelessWidget {
-  final String exerciseName;
-  final String category;
-  final String imagePath;
+  final ExerciseModel exercise;
 
   const ExerciseDetailScreen({
     super.key,
-    required this.exerciseName,
-    required this.category,
-    required this.imagePath,
+    required this.exercise,
   });
 
   static const Color navy = Color(0xFF111827);
   static const Color cardColor = Color(0xFF1F2937);
   static const Color blue = Color(0xFF2563EB);
   static const Color mutedColor = Color(0xFF9CA3AF);
+
+  String get category {
+    if (exercise.primaryMuscles.isNotEmpty) {
+      return exercise.primaryMuscles.join(', ');
+    }
+
+    return exercise.equipment ?? 'Workout';
+  }
+
+  String get imageUrl {
+    if (exercise.images.isEmpty) {
+      return '';
+    }
+
+    return 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${exercise.images.first}';
+  }
+
+  String get equipment {
+    return exercise.equipment ?? 'Not specified';
+  }
+
+  String get level {
+    return exercise.level ?? 'Not specified';
+  }
+
+  String get mechanic {
+    return exercise.mechanic ?? 'Not specified';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,18 +95,24 @@ class ExerciseDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Image.asset(
-        imagePath,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(
-            child: Icon(
-              Icons.fitness_center,
-              color: Colors.white,
-              size: 60,
-            ),
-          );
-        },
+      child: imageUrl.isNotEmpty
+          ? Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return _buildImagePlaceholder();
+              },
+            )
+          : _buildImagePlaceholder(),
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return const Center(
+      child: Icon(
+        Icons.fitness_center,
+        color: Colors.white,
+        size: 60,
       ),
     );
   }
@@ -91,7 +122,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          exerciseName,
+          exercise.name,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 26,
@@ -126,25 +157,25 @@ class ExerciseDetailScreen extends StatelessWidget {
       children: [
         Expanded(
           child: _buildInfoCard(
-            icon: Icons.repeat,
-            title: 'Sets',
-            value: '3',
+            icon: Icons.signal_cellular_alt,
+            title: 'Level',
+            value: level,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildInfoCard(
             icon: Icons.fitness_center,
-            title: 'Reps',
-            value: '12',
+            title: 'Equipment',
+            value: equipment,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildInfoCard(
-            icon: Icons.timer_outlined,
-            title: 'Rest',
-            value: '60s',
+            icon: Icons.sync_alt,
+            title: 'Mechanic',
+            value: mechanic,
           ),
         ),
       ],
@@ -159,7 +190,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(
         vertical: 18,
-        horizontal: 10,
+        horizontal: 8,
       ),
       decoration: BoxDecoration(
         color: cardColor,
@@ -175,6 +206,7 @@ class ExerciseDetailScreen extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             title,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: mutedColor,
               fontSize: 12,
@@ -183,9 +215,12 @@ class ExerciseDetailScreen extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -206,6 +241,14 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDescription() {
+    final primaryMuscles = exercise.primaryMuscles.isNotEmpty
+        ? exercise.primaryMuscles.join(', ')
+        : 'Not specified';
+
+    final secondaryMuscles = exercise.secondaryMuscles.isNotEmpty
+        ? exercise.secondaryMuscles.join(', ')
+        : 'Not specified';
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -213,26 +256,76 @@ class ExerciseDetailScreen extends StatelessWidget {
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Text(
-        'This exercise helps you improve your strength '
-        'and build muscle. Focus on proper form and '
-        'controlled movement during every repetition.',
-        style: TextStyle(
-          color: mutedColor,
-          fontSize: 14,
-          height: 1.6,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDescriptionItem(
+            'Primary Muscles',
+            primaryMuscles,
+          ),
+          const SizedBox(height: 14),
+          _buildDescriptionItem(
+            'Secondary Muscles',
+            secondaryMuscles,
+          ),
+          const SizedBox(height: 14),
+          _buildDescriptionItem(
+            'Equipment',
+            equipment,
+          ),
+        ],
       ),
     );
   }
 
+  Widget _buildDescriptionItem(
+    String title,
+    String value,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Color(0xFF60A5FA),
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          value,
+          style: const TextStyle(
+            color: mutedColor,
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSteps() {
-    final steps = [
-      'Prepare your body and position yourself correctly.',
-      'Perform the movement with controlled motion.',
-      'Maintain proper posture throughout the exercise.',
-      'Return to the starting position slowly.',
-    ];
+    final steps = exercise.instructions;
+
+    if (steps.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Text(
+          'Instructions are not available.',
+          style: TextStyle(
+            color: mutedColor,
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
 
     return Column(
       children: List.generate(

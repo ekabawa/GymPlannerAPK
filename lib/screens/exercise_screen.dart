@@ -1,46 +1,83 @@
+
 import 'package:flutter/material.dart';
+
+import '../models/exercise_model.dart';
+import '../services/exercise_service.dart';
 import 'exercise_detail_screen.dart';
 
-class ExerciseScreen extends StatelessWidget {
+class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({super.key});
 
+  @override
+  State<ExerciseScreen> createState() => _ExerciseScreenState();
+}
+
+class _ExerciseScreenState extends State<ExerciseScreen> {
   static const Color navy = Color(0xFF111827);
   static const Color cardColor = Color(0xFF1F2937);
   static const Color blue = Color(0xFF2563EB);
   static const Color mutedColor = Color(0xFF9CA3AF);
 
-  final List<Map<String, String>> exercises = const [
-    {
-      'name': 'Bench Press',
-      'category': 'Chest',
-      'image': 'assets/images/Jadwal.png',
-    },
-    {
-      'name': 'Dumbbell Curl',
-      'category': 'Arms',
-      'image': 'assets/images/Jadwal.png',
-    },
-    {
-      'name': 'Squat',
-      'category': 'Legs',
-      'image': 'assets/images/Jadwal.png',
-    },
-    {
-      'name': 'Shoulder Press',
-      'category': 'Shoulders',
-      'image': 'assets/images/Jadwal.png',
-    },
-    {
-      'name': 'Lat Pulldown',
-      'category': 'Back',
-      'image': 'assets/images/Jadwal.png',
-    },
-    {
-      'name': 'Deadlift',
-      'category': 'Full Body',
-      'image': 'assets/images/Jadwal.png',
-    },
-  ];
+  static const int pageSize = 20;
+
+  final ExerciseService _exerciseService = ExerciseService();
+
+  late Future<List<ExerciseModel>> _exerciseFuture;
+
+  List<ExerciseModel> _allExercises = [];
+  int _visibleCount = pageSize;
+
+  @override
+  void initState() {
+    super.initState();
+    _exerciseFuture = _loadExercises();
+  }
+
+  Future<List<ExerciseModel>> _loadExercises() async {
+    final exercises = await _exerciseService.fetchExercises();
+
+    if (mounted) {
+      setState(() {
+        _allExercises = exercises;
+      });
+    }
+
+    return exercises;
+  }
+
+  void _loadMore() {
+    setState(() {
+      _visibleCount += pageSize;
+
+      if (_visibleCount > _allExercises.length) {
+        _visibleCount = _allExercises.length;
+      }
+    });
+  }
+
+  void _retryFetch() {
+    setState(() {
+      _allExercises = [];
+      _visibleCount = pageSize;
+      _exerciseFuture = _loadExercises();
+    });
+  }
+
+  String _getCategory(ExerciseModel exercise) {
+    if (exercise.primaryMuscles.isNotEmpty) {
+      return exercise.primaryMuscles.first;
+    }
+
+    return exercise.equipment ?? 'Workout';
+  }
+
+  String _getImageUrl(ExerciseModel exercise) {
+    if (exercise.images.isEmpty) {
+      return '';
+    }
+
+    return 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${exercise.images.first}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +117,7 @@ class ExerciseScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
+              // Workout Collection
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -130,46 +168,120 @@ class ExerciseScreen extends StatelessWidget {
 
               const SizedBox(height: 28),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'All Exercises',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '${exercises.length} Exercises',
-                    style: const TextStyle(
-                      color: mutedColor,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+              FutureBuilder<List<ExerciseModel>>(
+                future: _exerciseFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(40),
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF60A5FA),
+                        ),
+                      ),
+                    );
+                  }
 
-              const SizedBox(height: 16),
+                  if (snapshot.hasError) {
+                    return _buildErrorState();
+                  }
 
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: exercises.length,
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: 0.72,
-                ),
-                itemBuilder: (context, index) {
-                  final exercise = exercises[index];
+                  final exercises = _allExercises;
 
-                  return _buildExerciseCard(
-                    context,
-                    exercise,
+                  if (exercises.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(30),
+                        child: Text(
+                          'No exercises available.',
+                          style: TextStyle(color: mutedColor),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final visibleExercises = exercises
+                      .take(_visibleCount)
+                      .toList();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'All Exercises',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${visibleExercises.length}/${exercises.length}',
+                            style: const TextStyle(
+                              color: mutedColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics:
+                            const NeverScrollableScrollPhysics(),
+                        itemCount: visibleExercises.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 0.72,
+                        ),
+                        itemBuilder: (context, index) {
+                          final exercise =
+                              visibleExercises[index];
+
+                          return _buildExerciseCard(
+                            context,
+                            exercise,
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      if (_visibleCount < exercises.length)
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _loadMore,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: blue,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Load More Exercises',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),
@@ -180,10 +292,60 @@ class ExerciseScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildErrorState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.wifi_off,
+            color: Color(0xFF60A5FA),
+            size: 48,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Failed to Load Exercises',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Please check your internet connection.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: mutedColor,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _retryFetch,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: blue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Try Again'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildExerciseCard(
     BuildContext context,
-    Map<String, String> exercise,
+    ExerciseModel exercise,
   ) {
+    final category = _getCategory(exercise);
+    final imageUrl = _getImageUrl(exercise);
+
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: () {
@@ -191,9 +353,7 @@ class ExerciseScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => ExerciseDetailScreen(
-              exerciseName: exercise['name']!,
-              category: exercise['category']!,
-              imagePath: exercise['image']!,
+              exercise: exercise,
             ),
           ),
         );
@@ -211,20 +371,17 @@ class ExerciseScreen extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    exercise['image']!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: navy,
-                        child: const Icon(
-                          Icons.fitness_center,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      );
-                    },
-                  ),
+                  if (imageUrl.isNotEmpty)
+                    Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _buildImagePlaceholder();
+                      },
+                    )
+                  else
+                    _buildImagePlaceholder(),
+
                   Positioned(
                     top: 10,
                     right: 10,
@@ -251,7 +408,7 @@ class ExerciseScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    exercise['name']!,
+                    exercise.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -271,7 +428,9 @@ class ExerciseScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      exercise['category']!,
+                      category,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Color(0xFF60A5FA),
                         fontSize: 11,
@@ -283,6 +442,19 @@ class ExerciseScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      color: navy,
+      child: const Center(
+        child: Icon(
+          Icons.fitness_center,
+          color: Colors.white,
+          size: 40,
         ),
       ),
     );
