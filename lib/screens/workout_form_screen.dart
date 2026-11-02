@@ -260,7 +260,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
       appBar: AppBar(
         backgroundColor: navy,
         title: Text(
-          _isEditing ? 'Edit Workout Schedule' : 'Add Workout Schedule',
+          _isEditing ? 'Edit Jadwal Latihan' : 'Tambahkan Jadwal Latihan',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -312,7 +312,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Plan Your Workout',
+                            'Rencanakan Latihan Anda',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 24,
@@ -321,7 +321,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Complete the details of your training session.',
+                            'Lengkapi detail sesi latihan Anda.',
                             style: TextStyle(
                               color: mutedColor,
                               fontSize: 14,
@@ -338,7 +338,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             isExpanded: true,
                             dropdownColor: cardColor,
                             decoration: _inputDecoration(
-                              hint: 'Select Exercise',
+                              hint: 'Pilih Exercise',
                             ),
                             items: _exercises.map((exercise) {
                               return DropdownMenuItem<ExerciseModel>(
@@ -402,7 +402,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             keyboardType: TextInputType.number,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputDecoration(
-                              hint: 'Enter number of sets',
+                              hint: 'Jumlah set',
                             ),
                             validator: (value) {
                               final number = int.tryParse(value ?? '');
@@ -423,7 +423,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             keyboardType: TextInputType.number,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputDecoration(
-                              hint: 'Enter number of reps',
+                              hint: 'Jumlah Repetisi',
                             ),
                             validator: (value) {
                               final number = int.tryParse(value ?? '');
@@ -444,7 +444,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             maxLines: 3,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputDecoration(
-                              hint: 'Add workout notes...',
+                              hint: 'Tambahkan catatan',
                             ),
                           ),
 
@@ -467,10 +467,10 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                                   : const Icon(Icons.save),
                               label: Text(
                                 _isSaving
-                                    ? 'Saving...'
+                                    ? 'Menyimpan...'
                                     : _isEditing
-                                        ? 'Update Workout'
-                                        : 'Save Workout',
+                                        ? 'Perbarui Latihan'
+                                        : 'Simpan Latihan',
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: blue,
