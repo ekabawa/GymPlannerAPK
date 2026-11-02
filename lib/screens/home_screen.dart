@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,15 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 28),
                 _buildWelcomeCard(),
                 const SizedBox(height: 24),
-                _buildSectionTitle('Workout Overview'),
+                _buildSectionTitle('Gambaran Umum Latihan'),
                 const SizedBox(height: 12),
                 _buildOverview(),
                 const SizedBox(height: 28),
-                _buildSectionTitle("Today's Workout"),
+                _buildSectionTitle("Latihan Hari ini"),
                 const SizedBox(height: 12),
                 _buildTodayWorkout(),
                 const SizedBox(height: 28),
-                _buildSectionTitle('Quick Access'),
+                _buildSectionTitle('Akses Cepat'),
                 const SizedBox(height: 12),
                 _buildQuickAccess(),
                 const SizedBox(height: 24),
@@ -220,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const SizedBox(height: 12),
                           const Text(
-                            'Build Your\nStrength.\nReach Your Goals.',
+                            'Bangun\nKekuatanmu\nCapai Tujuanmu',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 23,
@@ -230,8 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Plan your workouts and stay consistent '
-                            'with your fitness journey.',
+                            'Rencanakan sesi latihan Anda dan tetaplah konsisten ',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.78),
                               fontSize: 12,
@@ -249,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(width: 7),
                               Flexible(
                                 child: Text(
-                                  'Stay Strong. Stay Consistent.',
+                                  'Stay Strong and Stay Consistent',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
@@ -302,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.calendar_month,
-                  title: 'Total Schedules',
+                  title: 'Jadwal',
                   value: provider.isLoading ? '...' : '${schedules.length}',
                   description: 'Saved workout plans',
                   color: blue,
@@ -312,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.check_circle,
-                  title: 'Completed Workouts',
+                  title: 'Latihan Selesai',
                   value: provider.isLoading ? '...' : '$completed',
                   description: 'Finished workouts',
                   color: const Color(0xFF059669),

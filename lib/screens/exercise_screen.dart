@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../models/exercise_model.dart';
@@ -144,7 +143,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Workout Collection',
+                            'Koleksi Latihan',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -153,7 +152,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Explore different training exercises.',
+                            'Jelajahi berbagai latihan pelatihan',
                             style: TextStyle(
                               color: mutedColor,
                               fontSize: 12,
@@ -231,29 +230,42 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                       ),
 
                       const SizedBox(height: 16),
+                      
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final width = constraints.maxWidth;
 
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics:
-                            const NeverScrollableScrollPhysics(),
-                        itemCount: visibleExercises.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 14,
-                          childAspectRatio: 0.72,
-                        ),
-                        itemBuilder: (context, index) {
-                          final exercise =
-                              visibleExercises[index];
+                          final crossAxisCount = width < 600
+                              ? 2
+                              : width < 900
+                                  ? 3
+                                  : 4;
 
-                          return _buildExerciseCard(
-                            context,
-                            exercise,
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics:
+                                const NeverScrollableScrollPhysics(),
+                            itemCount: visibleExercises.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 14,
+                              childAspectRatio: 0.72,
+                            ),
+                            itemBuilder: (context, index) {
+                              final exercise =
+                                  visibleExercises[index];
+
+                              return _buildExerciseCard(
+                                context,
+                                exercise,
+                              );
+                            },
                           );
                         },
                       ),
+
 
                       const SizedBox(height: 20),
 

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -231,43 +230,58 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
+  
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.fitness_center,
-            color: ScheduleScreen.mutedColor,
-            size: 64,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Belum Ada Jadwal Latihan',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 30),
+                const Icon(
+                  Icons.fitness_center,
+                  color: ScheduleScreen.mutedColor,
+                  size: 64,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Belum Ada Jadwal Latihan',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Tambahkan jadwal latihan pertama Anda.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: ScheduleScreen.mutedColor,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => _openWorkoutForm(),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Tambah Jadwal'),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Tambahkan jadwal latihan pertama Anda.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: ScheduleScreen.mutedColor,
-            ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () => _openWorkoutForm(),
-            icon: const Icon(Icons.add),
-            label: const Text('Tambah Jadwal'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
+
 
   Widget _buildWorkoutCard(
     WorkoutModel workout,
