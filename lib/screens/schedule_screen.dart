@@ -77,6 +77,27 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       await provider.deleteWorkout(workout.id);
     }
   }
+  
+  Future<void> _toggleWorkoutStatus(
+    WorkoutProvider provider,
+    WorkoutModel workout,
+  ) async {
+    final updatedWorkout = WorkoutModel(
+      id: workout.id,
+      userId: workout.userId,
+      exerciseId: workout.exerciseId,
+      exerciseName: workout.exerciseName,
+      workoutDate: workout.workoutDate,
+      sets: workout.sets,
+      reps: workout.reps,
+      notes: workout.notes,
+      isCompleted: !workout.isCompleted,
+      createdAt: workout.createdAt,
+    );
+
+    await provider.updateWorkout(updatedWorkout);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -258,25 +279,37 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       decoration: BoxDecoration(
         color: ScheduleScreen.cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: workout.isCompleted
+            ? Border.all(
+                color: Colors.greenAccent.withValues(alpha: 0.3),
+                width: 1,
+              )
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.fitness_center,
-                color: Colors.blueAccent,
+                color: workout.isCompleted
+                    ? Colors.greenAccent
+                    : Colors.blueAccent,
                 size: 28,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   workout.exerciseName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
+                    decoration: workout.isCompleted
+                        ? TextDecoration.lineThrough
+                        : null,
+                    decorationColor: Colors.greenAccent,
                   ),
                 ),
               ),
@@ -338,6 +371,36 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
             ),
           ],
+          const Divider(
+            color: Colors.white12,
+            height: 20,
+          ),
+          Material(
+            color: Colors.transparent,
+            child: CheckboxListTile(
+              value: workout.isCompleted,
+              onChanged: (value) {
+                _toggleWorkoutStatus(provider, workout);
+              },
+              activeColor: Colors.greenAccent,
+              checkColor: ScheduleScreen.navy,
+              title: Text(
+                workout.isCompleted
+                    ? 'Latihan Selesai'
+                    : 'Tandai Latihan Selesai',
+                style: TextStyle(
+                  color: workout.isCompleted
+                      ? Colors.greenAccent
+                      : Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+            ),
+          ),
         ],
       ),
     );
