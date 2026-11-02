@@ -1,230 +1,228 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ScheduleScreen extends StatelessWidget {
+import '../models/workout_model.dart';
+import '../providers/workout_provider.dart';
+import 'workout_form_screen.dart';
+
+class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
 
-  static const Color navy = Color(0xFF111827);
-  static const Color blue = Color(0xFF2563EB);
-  static const Color cardColor = Color(0xFF1F2937);
-  static const Color mutedColor = Color(0xFF9CA3AF);
+  static const Color navy = Color(0xFF0D1B2A);
+  static const Color blue = Color(0xFF1B263B);
+  static const Color cardColor = Color(0xFF1B263B);
+  static const Color mutedColor = Color(0xFF778DA9);
+
+  @override
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      context.read<WorkoutProvider>().fetchWorkouts();
+    });
+  }
+
+  Future<void> _openWorkoutForm({WorkoutModel? workout}) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WorkoutFormScreen(
+          workout: workout,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteWorkout(
+    WorkoutProvider provider,
+    WorkoutModel workout,
+  ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ScheduleScreen.cardColor,
+        title: const Text(
+          'Hapus Jadwal',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Apakah Anda yakin ingin menghapus jadwal latihan ini?',
+          style: TextStyle(color: ScheduleScreen.mutedColor),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Hapus',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await provider.deleteWorkout(workout.id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: navy,
+      backgroundColor: ScheduleScreen.navy,
       appBar: AppBar(
-        backgroundColor: navy,
+        backgroundColor: ScheduleScreen.navy,
+        elevation: 0,
         title: const Text(
-          'Workout Schedule',
+          'Jadwal Latihan',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 24),
-              _buildOverviewCard(),
-              const SizedBox(height: 28),
-              _buildSectionTitle('My Workout Schedule'),
-              const SizedBox(height: 12),
-              _buildEmptyState(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+      body: Consumer<WorkoutProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.blueAccent,
+              ),
+            );
+          }
 
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Plan Your Training',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Manage your workout and stay consistent.',
-          style: TextStyle(
-            color: mutedColor,
-            fontSize: 14,
-          ),
-        ),
-      ],
-    );
-  }
+          if (provider.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.redAccent,
+                    size: 50,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    provider.errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => provider.fetchWorkouts(),
+                    child: const Text('Coba Lagi'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-  Widget _buildOverviewCard() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final imageWidth = constraints.maxWidth * 0.46;
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOverview(provider.workouts.length),
+                const SizedBox(height: 24),
+                const Text(
+                  'Daftar Jadwal',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: provider.workouts.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          itemCount: provider.workouts.length,
+                          itemBuilder: (context, index) {
+                            final workout = provider.workouts[index];
 
-        return Container(
-          width: double.infinity,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF60A5FA),
-                Color(0xFF2563EB),
-                Color(0xFF1E3A8A),
-                Color(0xFF0F172A),
+                            return _buildWorkoutCard(
+                              workout,
+                              provider,
+                            );
+                          },
+                        ),
+                ),
               ],
-              stops: [0.0, 0.32, 0.68, 1.0],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -6,
-                top: 0,
-                bottom: 0,
-                width: imageWidth,
-                child: ShaderMask(
-                  blendMode: BlendMode.dstIn,
-                  shaderCallback: (bounds) {
-                    return const LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black38,
-                        Colors.black,
-                      ],
-                      stops: [0.0, 0.35, 0.85],
-                    ).createShader(bounds);
-                  },
-                  child: Image.asset(
-                    'assets/images/Jadwal.png',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const SizedBox(),
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Colors.transparent,
-                        Colors.transparent,
-                        const Color(0xFF0F172A).withValues(alpha: 0.2),
-                      ],
-                      stops: const [0.0, 0.55, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Total Workout Schedules',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            '0',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                              height: 1.1,
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          Text(
-                            'Your planned training sessions',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: constraints.maxWidth * 0.30),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        onPressed: () => _openWorkoutForm(),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
+  Widget _buildOverview(int total) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: ScheduleScreen.cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Total Jadwal Latihan',
+            style: TextStyle(
+              color: ScheduleScreen.mutedColor,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$total',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 36,
-      ),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(18),
-      ),
+    return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: blue.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.fitness_center,
-              color: Color(0xFF60A5FA),
-              size: 36,
-            ),
+          const Icon(
+            Icons.fitness_center,
+            color: ScheduleScreen.mutedColor,
+            size: 64,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           const Text(
             'Belum Ada Jadwal Latihan',
-            textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -233,25 +231,113 @@ class ScheduleScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Mulai rencanakan latihanmu dengan '
-            'menambahkan jadwal workout baru.',
+            'Tambahkan jadwal latihan pertama Anda.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: mutedColor,
-              fontSize: 13,
-              height: 1.5,
+              color: ScheduleScreen.mutedColor,
             ),
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () => _openWorkoutForm(),
             icon: const Icon(Icons.add),
             label: const Text('Tambah Jadwal'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: blue,
-              foregroundColor: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkoutCard(
+    WorkoutModel workout,
+    WorkoutProvider provider,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ScheduleScreen.cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.fitness_center,
+                color: Colors.blueAccent,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  workout.exerciseName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: Colors.white,
+                ),
+                color: ScheduleScreen.cardColor,
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _openWorkoutForm(workout: workout);
+                  } else if (value == 'delete') {
+                    _deleteWorkout(provider, workout);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Text(
+                      'Edit',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text(
+                      'Hapus',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Tanggal: ${workout.workoutDate.day}/'
+            '${workout.workoutDate.month}/'
+            '${workout.workoutDate.year}',
+            style: const TextStyle(
+              color: ScheduleScreen.mutedColor,
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Sets: ${workout.sets} | Reps: ${workout.reps}',
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          if (workout.notes != null &&
+              workout.notes!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Catatan: ${workout.notes}',
+              style: const TextStyle(
+                color: ScheduleScreen.mutedColor,
+              ),
+            ),
+          ],
         ],
       ),
     );
