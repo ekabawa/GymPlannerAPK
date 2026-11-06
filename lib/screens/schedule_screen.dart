@@ -49,22 +49,22 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: ScheduleScreen.cardColor,
         title: const Text(
-          'Hapus Jadwal',
+          'Delete Schedule',
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          'Apakah Anda yakin ingin menghapus jadwal latihan ini?',
+          'Are you sure you want to delete this workout schedule?',
           style: TextStyle(color: ScheduleScreen.mutedColor),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text(
-              'Hapus',
+              'Delete',
               style: TextStyle(color: Colors.redAccent),
             ),
           ),
@@ -106,7 +106,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         backgroundColor: ScheduleScreen.navy,
         elevation: 0,
         title: const Text(
-          'Jadwal Latihan',
+          'Workout Schedule',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 _buildOverview(provider.workouts.length),
                 const SizedBox(height: 24),
                 const Text(
-                  'Daftar Jadwal',
+                  'Schedule List',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -210,7 +210,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Total Jadwal Latihan',
+            'Total Workout Schedules',
             style: TextStyle(
               color: ScheduleScreen.mutedColor,
               fontSize: 14,
@@ -252,7 +252,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Belum Ada Jadwal Latihan',
+                  'No workout schedules yet',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -262,7 +262,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Tambahkan jadwal latihan pertama Anda.',
+                  'Create your first workout schedule',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: ScheduleScreen.mutedColor,
@@ -272,7 +272,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ElevatedButton.icon(
                   onPressed: () => _openWorkoutForm(),
                   icon: const Icon(Icons.add),
-                  label: const Text('Tambah Jadwal'),
+                  label: const Text('Add Workout Schedule'),
                 ),
               ],
             ),
@@ -351,7 +351,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   const PopupMenuItem(
                     value: 'delete',
                     child: Text(
-                      'Hapus',
+                      'Delete',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -400,8 +400,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               checkColor: ScheduleScreen.navy,
               title: Text(
                 workout.isCompleted
-                    ? 'Latihan Selesai'
-                    : 'Tandai Latihan Selesai',
+                    ? 'Workout Completed'
+                    : 'Mark Workout as Completed',
                 style: TextStyle(
                   color: workout.isCompleted
                       ? Colors.greenAccent

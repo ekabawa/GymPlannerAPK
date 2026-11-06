@@ -143,7 +143,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Koleksi Latihan',
+                            'Workout Collection',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Jelajahi berbagai latihan pelatihan',
+                            '“Explore Various Workout Exercises',
                             style: TextStyle(
                               color: mutedColor,
                               fontSize: 12,

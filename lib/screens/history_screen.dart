@@ -237,7 +237,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Belum Ada Riwayat Latihan',
+            'No Workout History Yet',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -246,7 +246,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Latihan yang sudah selesai akan muncul di sini.',
+            'Completed workouts will appear here.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: HistoryScreen.mutedColor,

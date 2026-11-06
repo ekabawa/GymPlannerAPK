@@ -51,15 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 28),
                 _buildWelcomeCard(),
                 const SizedBox(height: 24),
-                _buildSectionTitle('Gambaran Umum Latihan'),
+                _buildSectionTitle('Overview'),
                 const SizedBox(height: 12),
                 _buildOverview(),
                 const SizedBox(height: 28),
-                _buildSectionTitle("Latihan Hari ini"),
+                _buildSectionTitle("Workout Today"),
                 const SizedBox(height: 12),
                 _buildTodayWorkout(),
                 const SizedBox(height: 28),
-                _buildSectionTitle('Akses Cepat'),
+                _buildSectionTitle('Quick access'),
                 const SizedBox(height: 12),
                 _buildQuickAccess(),
                 const SizedBox(height: 24),
@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const SizedBox(height: 12),
                           const Text(
-                            'Bangun\nKekuatanmu\nCapai Tujuanmu',
+                            'Build Your\nStrength, Achieve\nYour Goals',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 23,
@@ -229,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Rencanakan sesi latihan Anda dan tetaplah konsisten ',
+                            'Plan your training sessions and stay consistent',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.78),
                               fontSize: 12,
@@ -300,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.calendar_month,
-                  title: 'Jadwal',
+                  title: 'Schedule',
                   value: provider.isLoading ? '...' : '${schedules.length}',
                   description: 'Saved workout plans',
                   color: blue,
@@ -310,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.check_circle,
-                  title: 'Latihan Selesai',
+                  title: 'Completed',
                   value: provider.isLoading ? '...' : '$completed',
                   description: 'Finished workouts',
                   color: const Color(0xFF059669),

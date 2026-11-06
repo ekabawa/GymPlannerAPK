@@ -219,8 +219,8 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
         SnackBar(
           content: Text(
             _isEditing
-                ? 'Jadwal berhasil diperbarui.'
-                : 'Jadwal berhasil ditambahkan.',
+                ? 'Workout Schedule Updated Successfully.'
+                : 'Workout Schedule Added Successfully.',
           ),
           backgroundColor: blue,
         ),
@@ -232,7 +232,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
 
       messenger.showSnackBar(
         SnackBar(
-          content: Text('Gagal menyimpan jadwal: $e'),
+          content: Text('ailed to Save Workout Schedule: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -260,7 +260,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
       appBar: AppBar(
         backgroundColor: navy,
         title: Text(
-          _isEditing ? 'Edit Jadwal Latihan' : 'Tambahkan Jadwal Latihan',
+          _isEditing ? 'Edit Workout Schedule' : 'Add Workout Schedule',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -312,7 +312,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Rencanakan Latihan Anda',
+                            'Plan Your Workout',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 24,
@@ -321,7 +321,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Lengkapi detail sesi latihan Anda.',
+                            '“Fill in the details of your workout session',
                             style: TextStyle(
                               color: mutedColor,
                               fontSize: 14,
@@ -338,7 +338,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             isExpanded: true,
                             dropdownColor: cardColor,
                             decoration: _inputDecoration(
-                              hint: 'Pilih Exercise',
+                              hint: 'Select an Exercise',
                             ),
                             items: _exercises.map((exercise) {
                               return DropdownMenuItem<ExerciseModel>(
@@ -402,7 +402,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             keyboardType: TextInputType.number,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputDecoration(
-                              hint: 'Jumlah set',
+                              hint: 'Number',
                             ),
                             validator: (value) {
                               final number = int.tryParse(value ?? '');
@@ -423,7 +423,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             keyboardType: TextInputType.number,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputDecoration(
-                              hint: 'Jumlah Repetisi',
+                              hint: 'Number',
                             ),
                             validator: (value) {
                               final number = int.tryParse(value ?? '');
@@ -444,7 +444,7 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                             maxLines: 3,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputDecoration(
-                              hint: 'Tambahkan catatan',
+                              hint: 'Add a Note',
                             ),
                           ),
 
@@ -467,10 +467,10 @@ class _WorkoutFormScreenState extends State<WorkoutFormScreen> {
                                   : const Icon(Icons.save),
                               label: Text(
                                 _isSaving
-                                    ? 'Menyimpan...'
+                                    ? 'Saving...'
                                     : _isEditing
-                                        ? 'Perbarui Latihan'
-                                        : 'Simpan Latihan',
+                                        ? 'Update Workout schedule'
+                                        : 'Save Workout schedule',
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: blue,

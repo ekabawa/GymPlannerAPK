@@ -167,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Edit Profil',
+                          'Edit Profile',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -295,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 icon: const Icon(Icons.folder_open, size: 18),
                                 label: const Text(
-                                  'Cari Foto di File',
+                                  'Browse Photos in Files',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
@@ -345,17 +345,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildFieldLabel('Nama Lengkap'),
+                          _buildFieldLabel('Name'),
                           TextFormField(
                             controller: nameController,
                             style: const TextStyle(color: Colors.white, fontSize: 14),
                             decoration: _modalInputDecoration(
-                              hint: 'Masukkan nama lengkap',
+                              hint: 'Enter Your Name.',
                               icon: Icons.person_outline,
                             ),
                             validator: (val) {
                               if (val == null || val.trim().isEmpty) {
-                                return 'Nama lengkap wajib diisi';
+                                return 'Name Is Required';
                               }
                               return null;
                             },
@@ -382,7 +382,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           const SizedBox(height: 14),
 
-                          _buildFieldLabel('Kelas'),
+                          _buildFieldLabel('Class'),
                           TextFormField(
                             controller: kelasController,
                             textCapitalization: TextCapitalization.characters,
@@ -393,7 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             validator: (val) {
                               if (val == null || val.trim().isEmpty) {
-                                return 'Kelas wajib diisi';
+                                return 'Class Is Required';
                               }
                               return null;
                             },
@@ -418,7 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text('Batal'),
+                            child: const Text('Cancel'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -451,7 +451,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               elevation: 0,
                             ),
                             child: const Text(
-                              'Simpan Perubahan',
+                              'Save Changes',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -532,7 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         title: const Text(
-          'Profil',
+          'Profile',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -542,7 +542,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             onPressed: _showEditProfileModal,
             icon: const Icon(Icons.edit_note, color: Colors.white),
-            tooltip: 'Edit Profil',
+            tooltip: 'Edit Profile',
           ),
         ],
         backgroundColor: backgroundColor,
@@ -686,7 +686,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Color(0xFF60A5FA),
               ),
               label: const Text(
-                'Edit Profil',
+                'Edit Profile',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -740,7 +740,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Informasi Aplikasi',
+                'App Information',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -833,10 +833,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
 
                   const Text(
-                    'GYMPLANNER merupakan aplikasi mobile '
-                    'untuk membantu pengguna mengelola jadwal '
-                    'latihan, melihat daftar exercise, serta '
-                    'memantau riwayat dan progres workout.',
+                    'GYMPLANNER is a mobile application '
+                    'that helps users manage workout schedules, '
+                    'view exercise lists, and monitor workout '
+                    'history and progress.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
                       fontSize: 14,
