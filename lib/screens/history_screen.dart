@@ -100,7 +100,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 _buildOverview(completedWorkouts.length),
                 const SizedBox(height: 24),
                 const Text(
-                  'Riwayat Latihan',
+                  'Workout History',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -138,7 +138,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Total Latihan Selesai',
+            'Total Completed Workouts',
             style: TextStyle(
               color: HistoryScreen.mutedColor,
               fontSize: 14,
@@ -188,7 +188,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
               ),
               const Text(
-                'Selesai',
+                'Completed',
                 style: TextStyle(
                   color: Colors.greenAccent,
                   fontWeight: FontWeight.bold,
@@ -198,7 +198,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Tanggal: ${_formatDate(workout.workoutDate)}',
+            'Date: ${_formatDate(workout.workoutDate)}',
             style: const TextStyle(
               color: HistoryScreen.mutedColor,
             ),
@@ -214,7 +214,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               workout.notes!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
-              'Catatan: ${workout.notes}',
+              'Notes: ${workout.notes}',
               style: const TextStyle(
                 color: HistoryScreen.mutedColor,
               ),
