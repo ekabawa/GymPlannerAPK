@@ -34,8 +34,8 @@ GYMPLANNER merupakan aplikasi mobile berbasis Flutter yang dirancang untuk memba
 
 GYMPLANNER menggunakan REST API untuk memperoleh data latihan (exercise).
 
-- **API:** [Nama REST API]
-- **Endpoint:** [URL endpoint yang digunakan]
+- **API:** Free Exercise DB
+- **Endpoint:** https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json
 - **HTTP Method:** GET
 - **Data Format:** JSON
 
