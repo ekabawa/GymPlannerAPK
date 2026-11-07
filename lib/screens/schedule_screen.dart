@@ -151,38 +151,56 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             );
           }
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOverview(provider.workouts.length),
-                const SizedBox(height: 24),
-                const Text(
-                  'Schedule List',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: provider.workouts.isEmpty
-                      ? _buildEmptyState()
-                      : ListView.builder(
-                          itemCount: provider.workouts.length,
-                          itemBuilder: (context, index) {
-                            final workout = provider.workouts[index];
+          final isLandscape =
+              MediaQuery.of(context).orientation == Orientation.landscape;
 
-                            return _buildWorkoutCard(
-                              workout,
-                              provider,
-                            );
-                          },
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchWorkouts(),
+            color: Colors.blueAccent,
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                isLandscape ? 12 : 16,
+                isLandscape ? 10 : 16,
+                isLandscape ? 12 : 16,
+                80,
+              ),
+              itemCount: provider.workouts.isEmpty
+                  ? 2
+                  : provider.workouts.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildOverview(
+                        provider.workouts.length,
+                        compact: isLandscape,
+                      ),
+                      SizedBox(height: isLandscape ? 12 : 24),
+                      const Text(
+                        'Schedule List',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                ),
-              ],
+                      ),
+                      SizedBox(height: isLandscape ? 8 : 16),
+                    ],
+                  );
+                }
+
+                if (provider.workouts.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                final workout = provider.workouts[index - 1];
+                return _buildWorkoutCard(
+                  workout,
+                  provider,
+                );
+              },
             ),
           );
         },
@@ -198,87 +216,101 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  Widget _buildOverview(int total) {
+  Widget _buildOverview(
+    int total, {
+    bool compact = false,
+  }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(compact ? 12 : 20),
       decoration: BoxDecoration(
         color: ScheduleScreen.cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Total Workout Schedules',
-            style: TextStyle(
-              color: ScheduleScreen.mutedColor,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '$total',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  
-  Widget _buildEmptyState() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-            ),
-            
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
+      child: compact
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(height: 30),
-                const Icon(
-                  Icons.fitness_center,
-                  color: ScheduleScreen.mutedColor,
-                  size: 64,
-                ),
-                const SizedBox(height: 16),
                 const Text(
-                  'No workout schedules yet',
-                  textAlign: TextAlign.center,
+                  'Total Workout Schedules',
                   style: TextStyle(
+                    color: ScheduleScreen.mutedColor,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  '$total',
+                  style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 const Text(
-                  'Create your first workout schedule',
-                  textAlign: TextAlign.center,
+                  'Total Workout Schedules',
                   style: TextStyle(
                     color: ScheduleScreen.mutedColor,
+                    fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () => _openWorkoutForm(),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Workout Schedule'),
+                const SizedBox(height: 8),
+                Text(
+                  '$total',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 16),
+          const Icon(
+            Icons.fitness_center,
+            color: ScheduleScreen.mutedColor,
+            size: 64,
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          const Text(
+            'No workout schedules yet',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Create your first workout schedule',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: ScheduleScreen.mutedColor,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: () => _openWorkoutForm(),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Workout Schedule'),
+          ),
+        ],
+      ),
     );
   }
 

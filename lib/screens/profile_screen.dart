@@ -76,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
               SizedBox(width: 10),
-              Text('Profil berhasil diperbarui!'),
+              Text('Profile Updated Successfully!'),
             ],
           ),
           backgroundColor: successColor,

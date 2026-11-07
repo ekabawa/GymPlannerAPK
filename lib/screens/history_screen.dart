@@ -88,37 +88,53 @@ class _HistoryScreenState extends State<HistoryScreen> {
               .where((workout) => workout.isCompleted)
               .toList();
 
-          if (completedWorkouts.isEmpty) {
-            return _buildEmptyState();
-          }
+          final isLandscape =
+              MediaQuery.of(context).orientation == Orientation.landscape;
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOverview(completedWorkouts.length),
-                const SizedBox(height: 24),
-                const Text(
-                  'Workout History',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: completedWorkouts.length,
-                    itemBuilder: (context, index) {
-                      final workout = completedWorkouts[index];
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchWorkouts(),
+            color: Colors.blueAccent,
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                isLandscape ? 12 : 16,
+                isLandscape ? 10 : 16,
+                isLandscape ? 12 : 16,
+                isLandscape ? 24 : 32,
+              ),
+              itemCount: completedWorkouts.isEmpty
+                  ? 2
+                  : completedWorkouts.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildOverview(
+                        completedWorkouts.length,
+                        compact: isLandscape,
+                      ),
+                      SizedBox(height: isLandscape ? 12 : 24),
+                      const Text(
+                        'Workout History',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: isLandscape ? 8 : 16),
+                    ],
+                  );
+                }
 
-                      return _buildHistoryCard(workout);
-                    },
-                  ),
-                ),
-              ],
+                if (completedWorkouts.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                final workout = completedWorkouts[index - 1];
+                return _buildHistoryCard(workout);
+              },
             ),
           );
         },
@@ -126,35 +142,59 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildOverview(int total) {
+  Widget _buildOverview(
+    int total, {
+    bool compact = false,
+  }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(compact ? 12 : 20),
       decoration: BoxDecoration(
         color: HistoryScreen.cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Total Completed Workouts',
-            style: TextStyle(
-              color: HistoryScreen.mutedColor,
-              fontSize: 14,
+      child: compact
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Total Completed Workouts',
+                  style: TextStyle(
+                    color: HistoryScreen.mutedColor,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  '$total',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Total Completed Workouts',
+                  style: TextStyle(
+                    color: HistoryScreen.mutedColor,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$total',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '$total',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -226,17 +266,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 24),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          SizedBox(height: 16),
+          Icon(
             Icons.history,
             color: HistoryScreen.mutedColor,
             size: 64,
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'No Workout History Yet',
             style: TextStyle(
               color: Colors.white,
@@ -244,8 +287,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: 8),
+          Text(
             'Completed workouts will appear here.',
             textAlign: TextAlign.center,
             style: TextStyle(
